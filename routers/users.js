@@ -22,12 +22,16 @@ const DB_NAME = 'test-db';
 //   );
 // });
 
-router.post('/log-in', (req, res) => {
-  const userData = req.body;
-  const { email } = userData;
+const _ = fn => (req, res, next, ...args) =>
+  fn(req, res, next, ...args).catch(next);
 
-  MongoClient.connect(url, async (err, client) => {
-    try {
+router.post(
+  '/log-in',
+  _(async (req, res) => {
+    const userData = req.body;
+    const { email } = userData;
+
+    MongoClient.connect(url, async (err, client) => {
       if (err) throw err;
 
       const db = client.db(DB_NAME);
@@ -42,20 +46,17 @@ router.post('/log-in', (req, res) => {
       }
 
       client.close();
-    } catch (err) {
-      res.send(`failed to log in ${email}`);
-      client.close();
-      throw err;
-    }
-  });
-});
+    });
+  })
+);
 
-router.post('/register', (req, res) => {
-  const userData = req.body;
-  const { email } = userData;
+router.post(
+  '/register',
+  _(async (req, res) => {
+    const userData = req.body;
+    const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
-    try {
+    MongoClient.connect(url, async (err, client) => {
       if (err) throw err;
 
       const db = client.db(DB_NAME);
@@ -71,20 +72,17 @@ router.post('/register', (req, res) => {
       }
 
       client.close();
-    } catch (err) {
-      res.send(`failed to register ${email}`);
-      client.close();
-      throw err;
-    }
-  });
-});
+    });
+  })
+);
 
-router.put('/update-info', (req, res) => {
-  const userData = req.body;
-  const { email } = userData;
+router.put(
+  '/update-info',
+  _(async (req, res) => {
+    const userData = req.body;
+    const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
-    try {
+    MongoClient.connect(url, async (err, client) => {
       if (err) throw err;
 
       const db = client.db(DB_NAME);
@@ -93,27 +91,24 @@ router.put('/update-info', (req, res) => {
 
       const userEntry = await userCollection.findOne({ email });
       if (userEntry) {
-        await userCollection.updateOne({ email }, userData);
+        await userCollection.updateOne({ email }, { $set: { ...userData } });
         res.send(`${email} has been updated`);
       } else {
         res.send('must register first');
       }
 
       client.close();
-    } catch (err) {
-      res.send(`failed to update ${email}`);
-      client.close();
-      throw err;
-    }
-  });
-});
+    });
+  })
+);
 
-router.delete('/delete-account', (req, res) => {
-  const userData = req.body;
-  const { email } = userData;
+router.delete(
+  '/delete-account',
+  _(async (req, res) => {
+    const userData = req.body;
+    const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
-    try {
+    MongoClient.connect(url, async (err, client) => {
       if (err) throw err;
 
       const db = client.db(DB_NAME);
@@ -129,11 +124,8 @@ router.delete('/delete-account', (req, res) => {
       }
 
       client.close();
-    } catch (err) {
-      client.close();
-      throw err;
-    }
-  });
-});
+    });
+  })
+);
 
 module.exports = router;
