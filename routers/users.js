@@ -9,7 +9,7 @@ const url = 'mongodb://localhost:27017';
 const DB_NAME = 'test-db';
 
 // MongoClient.connect(url, (err, client) => {
-//   assert.strictEqual(err, null);
+//   if(err) throw err;
 
 //   const db = client.db(DB_NAME);
 
@@ -23,17 +23,18 @@ const DB_NAME = 'test-db';
 // });
 
 router.post('/log-in', (req, res) => {
-  MongoClient.connect(url, (err, client) => {
-    assert.strictEqual(err, null);
+  const userData = req.body;
+  const { email } = userData;
 
-    const db = client.db(DB_NAME);
+  MongoClient.connect(url, async (err, client) => {
+    try {
+      if (err) throw err;
 
-    const userCollection = db.collection('users');
+      const db = client.db(DB_NAME);
 
-    const userData = req.body;
-    const { email } = userData;
+      const userCollection = db.collection('users');
 
-    userCollection.findOne({ email }).then(userEntry => {
+      const userEntry = await userCollection.findOne({ email });
       if (userEntry) {
         res.send('logged in');
       } else {
@@ -41,80 +42,97 @@ router.post('/log-in', (req, res) => {
       }
 
       client.close();
-    });
+    } catch (err) {
+      res.send(`failed to log in ${email}`);
+      client.close();
+      throw err;
+    }
   });
 });
 
 router.post('/register', (req, res) => {
-  MongoClient.connect(url, (err, client) => {
-    assert.strictEqual(err, null);
+  const userData = req.body;
+  const { email } = userData;
 
-    const db = client.db(DB_NAME);
+  MongoClient.connect(url, async (err, client) => {
+    try {
+      if (err) throw err;
 
-    const userCollection = db.collection('users');
+      const db = client.db(DB_NAME);
 
-    const userData = req.body;
-    const { email } = userData;
+      const userCollection = db.collection('users');
 
-    userCollection.findOne({ email }).then(userEntry => {
+      const userEntry = await userCollection.findOne({ email });
       if (userEntry) {
         res.send('already registered');
       } else {
-        userCollection.insertOne(userData);
-        res.send('registered');
+        await userCollection.insertOne(userData);
+        res.send(`${email} has been registered`);
       }
 
       client.close();
-    });
+    } catch (err) {
+      res.send(`failed to register ${email}`);
+      client.close();
+      throw err;
+    }
   });
 });
 
 router.put('/update-info', (req, res) => {
-  MongoClient.connect(url, (err, client) => {
-    assert.strictEqual(err, null);
+  const userData = req.body;
+  const { email } = userData;
 
-    const db = client.db(DB_NAME);
+  MongoClient.connect(url, async (err, client) => {
+    try {
+      if (err) throw err;
 
-    const userCollection = db.collection('users');
+      const db = client.db(DB_NAME);
 
-    const userData = req.body;
-    const { email } = userData;
+      const userCollection = db.collection('users');
 
-    userCollection.findOne({ email }).then(userEntry => {
+      const userEntry = await userCollection.findOne({ email });
       if (userEntry) {
-        userCollection.updateOne({ email }, userData);
-        res.send('user info updated');
+        await userCollection.updateOne({ email }, userData);
+        res.send(`${email} has been updated`);
       } else {
         res.send('must register first');
       }
 
       client.close();
-    });
+    } catch (err) {
+      res.send(`failed to update ${email}`);
+      client.close();
+      throw err;
+    }
   });
 });
 
 router.delete('/delete-account', (req, res) => {
-  MongoClient.connect(url, (err, client) => {
-    assert.strictEqual(err, null);
+  const userData = req.body;
+  const { email } = userData;
 
-    const db = client.db(DB_NAME);
+  MongoClient.connect(url, async (err, client) => {
+    try {
+      if (err) throw err;
 
-    const userCollection = db.collection('users');
+      const db = client.db(DB_NAME);
 
-    const userData = req.body;
-    const { email } = userData;
+      const userCollection = db.collection('users');
 
-    userCollection.findOne({ email }).then(userEntry => {
+      const userEntry = await userCollection.findOne({ email });
       if (userEntry) {
-        userCollection
-          .deleteOne({ email })
-          .then(() => res.send(`${email} has been removed`));
+        await userCollection.deleteOne({ email });
+        res.send(`${email} has been removed`);
       } else {
         res.send('user not registered');
       }
 
       client.close();
-    });
+    } catch (err) {
+      client.close();
+      throw err;
+    }
   });
 });
 
