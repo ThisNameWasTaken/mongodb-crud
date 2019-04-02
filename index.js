@@ -20,7 +20,6 @@ const LocalStrategy = require('passport-local').Strategy;
 
 // SETUP
 const app = express();
-const PORT = process.env.port || 3000;
 
 connectToDb();
 
@@ -74,6 +73,6 @@ app.use((err, req, res, next) => {
 });
 
 // START SERVER
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(process.env.PORT || 3000, () => console.log(`Server started on port ${process.env.PORT}`));
 
 module.exports = app;
