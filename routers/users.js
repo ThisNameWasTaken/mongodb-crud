@@ -1,12 +1,15 @@
 const express = require('express');
-require('express-async-errors');
 const router = express.Router();
 const MongoClient = require('mongodb').MongoClient;
+const config = require('../config');
+const { NODE_ENV } = process.env;
+
+require('express-async-errors');
 
 // Connection URL
-const url = 'mongodb://localhost:27017';
+const url = config.db[NODE_ENV]['uri'];
 
-const DB_NAME = 'test-db';
+const DB_NAME = config.db[NODE_ENV]['name'];
 
 // MongoClient.connect(url, (err, client) => {
 //   if(err) throw err;
@@ -26,7 +29,7 @@ router.post('/log-in', async (req, res) => {
   const userData = req.body;
   const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, async (err, client) => {
     if (err) throw err;
 
     const db = client.db(DB_NAME);
@@ -48,7 +51,7 @@ router.post('/register', async (req, res) => {
   const userData = req.body;
   const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, async (err, client) => {
     if (err) throw err;
 
     const db = client.db(DB_NAME);
@@ -71,7 +74,7 @@ router.put('/update-info', async (req, res) => {
   const userData = req.body;
   const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, async (err, client) => {
     if (err) throw err;
 
     const db = client.db(DB_NAME);
@@ -94,7 +97,7 @@ router.delete('/delete-account', async (req, res) => {
   const userData = req.body;
   const { email } = userData;
 
-  MongoClient.connect(url, async (err, client) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, async (err, client) => {
     if (err) throw err;
 
     const db = client.db(DB_NAME);
