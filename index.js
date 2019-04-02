@@ -1,23 +1,62 @@
 require('dotenv').config();
 const express = require('express');
-const userRouter = require('./routers/users');
+const userRouter = require('./routers/users.routes');
+const authRouter = require('./routers/auth.routes');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const createError = require('http-errors');
 const mongoSanitizeMiddleware = require('./middleware/mongo-sanitize');
 const config = require('./config');
+const passport = require('passport');
+const User = require('./models/user');
+const connectToDb = require('./db/connect');
+
+// JWT PASSPORT  
+const passportJWT = require("passport-jwt");
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+
+const LocalStrategy = require('passport-local').Strategy;
 
 // SETUP
 const app = express();
 const PORT = process.env.port || 3000;
 
+connectToDb();
+
 // MIDDLEWARE
 app.use(bodyParser.json());
 app.use(mongoSanitizeMiddleware());
 app.use(logger(process.env.NODE_ENV));
+app.use(passport.initialize());
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+},
+    User.authenticate()
+));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey: 'ILovePokemon'
+},
+    function (jwtPayload, cb) {
+
+        //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
+        return User.findById(jwtPayload.id)
+            .then(user => {
+                return cb(null, user);
+            })
+            .catch(err => {
+                return cb(err);
+            });
+    }
+));
 
 // ROUTES
-app.use('/user', userRouter);
+app.use('/auth', authRouter);
+app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
 
 // ERROR HANDLING
 // Not Found Error

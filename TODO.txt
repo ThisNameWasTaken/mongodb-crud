@@ -1,2 +1,8 @@
-// TODO
+// DONE
 x add morgan 
+x add search by plate number functionality
+
+// TODO
+add forgot-pass functionality --> send new password in email
+concretize user model --> phone number etc.
+add unit tests
