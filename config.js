@@ -3,7 +3,7 @@ const config = {
         port: 3000
     },
     db: {
-        dev: {
+        production: {
             uri: 'mongodb+srv://alex:alex@cluster0-3pdbe.mongodb.net/safe-park?retryWrites=true',
             name: 'safe-park'
         },
