@@ -29,7 +29,7 @@ app.use(mongoSanitizeMiddleware());
 app.use(logger(process.env.NODE_ENV));
 app.use(passport.initialize());
 passport.use(new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username',
     passwordField: 'password'
 },
     User.authenticate()
@@ -41,7 +41,6 @@ passport.use(new JWTStrategy({
     secretOrKey: 'ILovePokemon'
 },
     function (jwtPayload, cb) {
-
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
         return User.findById(jwtPayload.id)
             .then(user => {

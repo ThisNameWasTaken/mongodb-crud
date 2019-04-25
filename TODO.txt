@@ -1,8 +1,8 @@
 // DONE
 x add morgan 
 x add search by plate number functionality
+x concretize user model --> phone number etc.
+x add unit tests
 
 // TODO
 add forgot-pass functionality --> send new password in email
-concretize user model --> phone number etc.
-add unit tests
