@@ -6,3 +6,4 @@ x add unit tests
 
 // TODO
 add forgot-pass functionality --> send new password in email
+add notifications to a specific user
