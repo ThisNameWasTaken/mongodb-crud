@@ -7,7 +7,8 @@ let userSchema = new Schema({
     username: String,
     password: String,
     plate: String,
-    phone: String
+    phone: String,
+    userId: String
 }, { collection: 'users' });
 
 userSchema.plugin(passportLocalMongoose);

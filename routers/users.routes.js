@@ -12,6 +12,9 @@ router.get('/profile', function (req, res, next) {
 // get by plate number
 router.get('/plate', UserController.searchByPlate);
 
+// send notification alert
+router.post('/alert', UserController.alert);
+
 // PUT
 // update-info
 router.put('/update', UserController.update);

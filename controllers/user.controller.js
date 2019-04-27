@@ -2,6 +2,12 @@ const User = require('../models/user');
 const bodyParser = require('body-parser');
 const createError = require('http-errors');
 const UserController = {};
+const OneSignal = require('onesignal-node');
+
+var myClient = new OneSignal.Client({
+    userAuthKey: 'XXXXXX',
+    app: { appAuthKey: 'MzRlZTFlMWMtYjIzMi00NjU2LWE3NjAtYTY1MmQ4YzZkYWUw', appId: '24dae07a-52c3-4fdc-91c3-e77929446319' }
+});
 
 UserController.delete = async (req, res, next) => {
     try {
@@ -17,6 +23,8 @@ UserController.delete = async (req, res, next) => {
 
 UserController.update = async (req, res, next) => {
     let { _id } = req.user;
+    console.log(req.body);
+
     User.updateOne({ _id }, { ...req.body }, (err) => {
         if (err) return next(createError(500, err.message));
         res.status(200).send('Succesfully updated');
@@ -49,6 +57,33 @@ UserController.searchByPlate = async (req, res, next) => {
         if (err) return next(createError(500, err.message));
         if (!user) return next(createError(404, 'Not found'));
         return res.status(200).send(user);
+    });
+}
+
+UserController.alert = async (req, res, next) => {
+    let { plate } = req.body;
+
+    User.findOne({ plate }, function (err, user) {
+        if (err) return next(createError(500, err.message));
+        if (!user) return next(createError(404, 'Not found'));
+        let { userId } = user;
+
+        let firstNotification = new OneSignal.Notification({
+            contents: {
+                en: "Test notification",
+                tr: "Test mesajı"
+            },
+            include_player_ids: ["47bd4aa5-3d48-4fd2-a9ba-0ef60e87fe28"]
+        });
+
+        myClient.sendNotification(firstNotification, function (err, httpResponse, data) {
+            if (err) {
+                return res.status(500).send(err);
+            } else {
+                console.log(data, httpResponse.statusCode);
+                return res.status(200).send("Notification sent to " + user);
+            }
+        });
     });
 }
 
