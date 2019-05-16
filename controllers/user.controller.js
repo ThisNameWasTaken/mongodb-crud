@@ -66,14 +66,20 @@ UserController.alert = async (req, res, next) => {
     User.findOne({ plate }, function (err, user) {
         if (err) return next(createError(500, err.message));
         if (!user) return next(createError(404, 'Not found'));
-        let { userId } = user;
+        let { notificationId } = user;
+
+        if (notificationId === undefined) {
+            return res.status(500).send('No notification id!');
+        }
+
+        console.log(notificationId);
 
         let firstNotification = new OneSignal.Notification({
             contents: {
                 en: "Test notification",
                 tr: "Test mesajı"
             },
-            include_player_ids: ["47bd4aa5-3d48-4fd2-a9ba-0ef60e87fe28"]
+            include_player_ids: [notificationId]
         });
 
         myClient.sendNotification(firstNotification, function (err, httpResponse, data) {

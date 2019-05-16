@@ -38,7 +38,10 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'ILovePokemon'
+    secretOrKey: 'ILovePokemon',
+    jsonWebTokenOptions: {
+        expiresIn: '1s'
+    }
 },
     function (jwtPayload, cb) {
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
