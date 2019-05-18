@@ -16,6 +16,10 @@ router.get('/plate', UserController.searchByPlate);
 // update-info
 router.put('/update', UserController.update);
 
+// GET
+// getID
+router.get('/getID', UserController.getId);
+
 // change pass
 router.put('/changepass', UserController.changePass);
 

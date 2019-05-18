@@ -23,6 +23,11 @@ UserController.update = async (req, res, next) => {
     });
 }
 
+UserController.getId = async (req, res, next) => {
+    let { _id } = req.user;
+    res.status(200).send(_id);
+}
+
 UserController.changePass = async (req, res, next) => {
     let { password } = req.body;
 
